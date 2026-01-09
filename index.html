@@ -3,113 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ОСОН САВДО v5.1 - Online</title>
+    <title>ОСОН САВДО v6.3 (Full Version)</title>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     <style>
-        :root { --main: #007bff; --bg: #f4f7f6; --gold: #ffd700; --red: #dc3545; --green: #28a745; --dark: #333; --gray: #777; }
+        :root { --main: #007bff; --bg: #f4f7f6; --gold: #ffc107; --red: #dc3545; --green: #28a745; --dark: #333; --gray: #777; }
         body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); padding-bottom: 90px; color: var(--dark); overflow-x: hidden; }
         .header { background: var(--main); color: white; padding: 12px 15px; position: sticky; top: 0; z-index: 1000; display: flex; align-items: center; gap: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .mini-logo { width: 45px; height: 45px; background: #007bff; color: white; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 20px; box-shadow: 0 4px 10px rgba(0,123,255,0.3); }
+        .mini-logo { width: 45px; height: 45px; background: white; color: var(--main); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 20px; }
         .search-box { flex: 1; }
         .search-box input { width: 100%; padding: 10px 15px; border-radius: 20px; border: none; outline: none; box-sizing: border-box; }
         .cats { display: flex; gap: 8px; overflow-x: auto; padding: 10px 15px; scrollbar-width: none; background: white; border-bottom: 1px solid #eee; }
         .cat-btn { background: #eee; padding: 8px 15px; border-radius: 20px; font-size: 13px; white-space: nowrap; border: none; cursor: pointer; transition: 0.3s; }
         .cat-btn.active { background: var(--main); color: white; }
-        .welcome-msg { padding: 15px 15px 5px; font-size: 18px; font-weight: bold; }
-        .vip-section { padding: 15px; background: #fffbe6; border-bottom: 2px solid var(--gold); margin-bottom: 10px; }
-        .vip-header { font-weight: bold; color: #d35400; margin-bottom: 10px; font-size: 13px; display: flex; align-items: center; gap: 5px; }
-        .vip-scroll { display: flex; gap: 12px; overflow-x: auto; scrollbar-width: none; }
-        .vip-card { min-width: 120px; background: white; border-radius: 12px; overflow: hidden; border: 1px solid var(--gold); position: relative; }
-        .vip-card img { width: 100%; height: 90px; object-fit: cover; }
-        .vip-card p { font-size: 11px; padding: 6px; margin: 0; font-weight: bold; text-align: center; }
-        .container { padding: 10px 15px; max-width: 600px; margin: auto; }
+        
+        /* Стили VIP ва Картҳо */
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .card { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.06); position: relative; border: 1px solid #eee; }
+        .card.vip { border: 2px solid var(--gold); }
+        .vip-badge { position: absolute; top: 5px; left: 5px; background: var(--gold); color: black; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 5px; z-index: 10; }
         .card img { width: 100%; height: 130px; object-fit: cover; }
         .card-body { padding: 10px; }
         .price { color: var(--red); font-weight: bold; font-size: 16px; }
         .title { font-size: 12px; height: 34px; overflow: hidden; margin: 5px 0; color: #444; font-weight: 500; }
-        .sold-badge { position: absolute; top: 40px; left: 0; width: 100%; background: rgba(220, 53, 69, 0.8); color: white; text-align: center; padding: 5px 0; font-weight: bold; transform: rotate(-15deg); font-size: 12px; z-index: 2; }
-        .vip-star { position: absolute; top: 5px; left: 5px; background: var(--gold); color: black; font-size: 9px; padding: 2px 6px; border-radius: 5px; font-weight: bold; z-index: 2; }
-        .like-btn { position: absolute; top: 8px; right: 8px; background: white; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2); border: none; cursor: pointer; z-index: 3; }
-        .nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; border-top: 1px solid #eee; padding: 10px 0; z-index: 1000; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); }
-        .nav-item { flex: 1; text-align: center; font-size: 10px; color: var(--gray); cursor: pointer; border: none; background: none; outline: none; }
-        .nav-item b { font-size: 20px; display: block; margin-bottom: 2px; }
-        #ad-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 5000; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
-        .modal-content { background: white; width: 90%; max-width: 400px; border-radius: 20px; overflow: hidden; position: relative; }
-        .modal-body { padding: 20px; }
-        .btn-call { background: var(--main); color: white; border: none; padding: 14px; border-radius: 12px; width: 100%; font-weight: bold; display: block; text-align: center; text-decoration: none; margin-bottom: 10px; cursor: pointer; }
-        .btn-wa { background: var(--green); color: white; border: none; padding: 14px; border-radius: 12px; width: 100%; font-weight: bold; display: block; text-align: center; text-decoration: none; cursor: pointer; }
-        .centered-form { display: flex; flex-direction: column; justify-content: center; min-height: calc(100vh - 160px); max-width: 400px; margin: 0 auto; }
-        .btn-logout { background: var(--red); color: white; border: none; padding: 10px; border-radius: 10px; width: 100%; font-weight: bold; margin-bottom: 15px; cursor: pointer; }
+        
+        /* Модал ва Навигатсия */
+        #ad-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 5000; overflow-y: auto; flex-direction: column; }
+        .slider-container { width: 100%; height: 350px; position: relative; background: #000; }
+        .slider-track img { width: 100%; height: 100%; object-fit: contain; }
+        .modal-body { padding: 20px; flex: 1; }
+        .spec-item { background: #f8f9fa; padding: 10px; border-radius: 10px; margin-bottom: 8px; display: flex; justify-content: space-between; font-size: 14px; }
+        
+        .input-style { width: 100%; padding: 14px; margin-bottom: 12px; border: 1px solid #ddd; border-radius: 12px; box-sizing: border-box; }
+        .nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; border-top: 1px solid #eee; padding: 10px 0; z-index: 1000; }
+        .nav-item { flex: 1; text-align: center; font-size: 10px; color: var(--gray); cursor: pointer; border: none; background: none; }
+        .nav-item b { font-size: 20px; display: block; }
+        
+        .btn-call { background: var(--main); color: white; border: none; padding: 14px; border-radius: 12px; width: 100%; font-weight: bold; display: block; text-align: center; text-decoration: none; margin-top: 20px; }
+        .btn-red { background: var(--red); color: white; border: none; padding: 10px; border-radius: 10px; width: 100%; font-weight: bold; margin-top: 10px; }
+        .btn-vip { background: var(--gold); color: black; border: none; padding: 10px; border-radius: 10px; width: 100%; font-weight: bold; margin-top: 5px; }
+        
+        #loading-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); z-index: 7000; align-items: center; justify-content: center; flex-direction: column; }
     </style>
 </head>
 <body>
 
+<div id="loading-overlay">
+    <div style="border: 4px solid #f3f3f3; border-top: 4px solid var(--main); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite;"></div>
+    <p>Лутфан, мунтазир шавед...</p>
+</div>
+
 <div id="auth-overlay" style="position:fixed; top:0; left:0; width:100%; height:100%; background:white; z-index:6000; display:flex; align-items:center; justify-content:center;">
     <div style="width:80%; text-align:center;">
-        <h2 style="color:var(--main); margin-bottom:30px; font-weight: bold; letter-spacing: 1px;">OSON SAVDO</h2>
-        <div class="mini-logo" style="margin: 0 auto 15px auto; width: 85px; height: 85px; font-size: 38px; border-radius: 20px;">ОС</div>
-        <h1 style="color:var(--main); margin-bottom:10px;">Хуш омадед!</h1>
-        <input type="number" id="regPhone" style="width:100%; padding:15px; border-radius:15px; border:2px solid #eee; margin-bottom:15px; outline:none;" placeholder="931234567">
-        <button onclick="auth.login()" style="background:var(--main); color:white; border:none; padding:15px; border-radius:15px; width:100%; font-weight:bold; cursor:pointer;">ГИРИФТАНИ КОД</button>
+        <h2 style="color:var(--main);">OSON SAVDO</h2>
+        <input type="number" id="regPhone" class="input-style" placeholder="931234567">
+        <button onclick="auth.login()" class="btn-call">ГИРИФТАНИ КОД</button>
     </div>
 </div>
 
 <div id="main-content" style="display:none;">
     <div class="header">
         <div class="mini-logo">ОС</div>
-        <div class="search-box">
-            <input type="text" placeholder="Ҷустуҷӯи маҳсулот..." oninput="app.search(this.value)">
-        </div>
+        <div class="search-box"><input type="text" placeholder="Ҷустуҷӯ..." oninput="app.search(this.value)"></div>
     </div>
 
     <div id="home-view">
-        <div class="welcome-msg" id="greeting">Салом!</div>
-        <div id="vip-area" class="vip-section" style="display:none;">
-            <div class="vip-header">⭐ VIP ТАКЛИФҲО</div>
-            <div class="vip-scroll" id="vip-track"></div>
-        </div>
         <div class="cats" id="cat-nav">
             <div class="cat-btn active" onclick="app.filter('Ҳама', this)">Ҳама</div>
             <div class="cat-btn" onclick="app.filter('Телефон', this)">📱 Телефон</div>
             <div class="cat-btn" onclick="app.filter('Мошин', this)">🚗 Мошин</div>
             <div class="cat-btn" onclick="app.filter('Хона', this)">🏠 Хона</div>
             <div class="cat-btn" onclick="app.filter('Иҷора', this)">🔑 Иҷора</div>
-            <div class="cat-btn" onclick="app.filter('Ноутбук', this)">💻 Ноутбук</div>
             <div class="cat-btn" onclick="app.filter('Усто', this)">🛠️ Усто</div>
-            <div class="cat-btn" onclick="app.filter('Либос', this)">👕 Либос</div>
+            <div class="cat-btn" onclick="app.filter('барномасоз', this)">💻 Барномасоз</div>
+            <div class="cat-btn" onclick="app.filter('либос', this)">👕 Либос</div>
             <div class="cat-btn" onclick="app.filter('Оптом', this)">📦 Оптом</div>
         </div>
     </div>
 
-    <div class="container">
-        <div id="profile-tools" style="display:none;">
-             <button class="btn-logout" onclick="auth.logout()">🔴 БАРОМАД АЗ ПРОФИЛ</button>
-        </div>
-        <div id="feed"></div>
-    </div>
+    <div class="container"><div id="feed"></div></div>
 
     <div class="nav">
         <button class="nav-item" onclick="app.goHome()"><b>🏠</b>Асосӣ</button>
         <button class="nav-item" onclick="app.showAdd()"><b>➕</b>Эълон</button>
-        <a href="https://wa.me/992000000000" target="_blank" class="nav-item"><b>💬</b>Чат</a>
-        <button class="nav-item" onclick="app.showFavs()"><b>❤️</b>Дӯстдошта</button>
         <button class="nav-item" onclick="app.showMyAds()"><b>👤</b>Профил</button>
     </div>
 </div>
 
 <div id="ad-modal">
-    <div class="modal-content">
-        <div onclick="app.closeModal()" style="position:absolute; top:15px; right:15px; background:rgba(0,0,0,0.5); color:white; width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:10;">✕</div>
-        <img src="" id="m-img" style="width:100%; height:250px; object-fit:cover;">
-        <div class="modal-body">
-            <h2 id="m-price" style="color:var(--red); margin:0;"></h2>
-            <h3 id="m-title" style="margin: 10px 0;"></h3>
-            <a id="m-call" href="#" class="btn-call">📞 ЗАНГ ЗАДАН</a>
-            <a id="m-wa" href="#" target="_blank" class="btn-wa">💬 WHATSAPP</a>
-        </div>
+    <div class="slider-container">
+        <div class="slider-track" id="slider-track"></div>
+        <div onclick="app.closeModal()" style="position:fixed; top:20px; right:20px; background:rgba(0,0,0,0.5); color:white; width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; z-index:6000;">✕</div>
+    </div>
+    <div class="modal-body">
+        <h2 id="m-price" style="color:var(--red); margin:0;"></h2>
+        <h3 id="m-title" style="margin: 10px 0;"></h3>
+        <div id="m-extra"></div>
+        <p id="m-desc" style="color:var(--gray); line-height:1.5;"></p>
+        <a id="m-call" href="#" class="btn-call">📞 ЗАНГ ЗАДАН</a>
     </div>
 </div>
 
@@ -120,180 +111,169 @@ const firebaseConfig = {
   databaseURL: "https://oson-savdo-4384f-default-rtdb.firebaseio.com",
   projectId: "oson-savdo-4384f",
   storageBucket: "oson-savdo-4384f.firebasestorage.app",
-  messagingSenderId: "114437910664",
-  appId: "1:114437910664:web:4c622f0cbf8a913e426f3d",
-  measurementId: "G-DFY3WY3JZ5"
+  appId: "1:114437910664:web:4c622f0cbf8a913e426f3d"
 };
-
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
 const auth = {
     user: localStorage.getItem('os_user'),
+    adminPhone: "900000000", // Рақами админро инҷо гузоред
     login() {
         const p = document.getElementById('regPhone').value;
-        const tjRegexp = /^(90|91|92|93|98|50|55|77|88|20|00|11)\d{7}$|^00\d{2,7}$/;
-        if(tjRegexp.test(p)) { localStorage.setItem('os_user', p); location.reload(); }
-        else alert("Рақами нодуруст!");
+        if(p.length >= 9) { localStorage.setItem('os_user', p); location.reload(); }
     },
-    logout() { if(confirm("Баромадан?")) { localStorage.removeItem('os_user'); location.reload(); } },
-    check() { if(this.user) { document.getElementById('auth-overlay').style.display = 'none'; document.getElementById('main-content').style.display = 'block'; this.setGreeting(); } },
-    setGreeting() { const h = new Date().getHours(); document.getElementById('greeting').innerText = h < 12 ? "☀️ Субҳ ба хайр!" : h < 18 ? "🌤️ Рӯз ба хайр!" : "🌙 Шоми ба хайр!"; }
+    check() { if(this.user) { document.getElementById('auth-overlay').style.display='none'; document.getElementById('main-content').style.display='block'; } },
+    isAdmin() { return this.user === this.adminPhone; }
 };
 
 const app = {
     ads: [],
-    favs: JSON.parse(localStorage.getItem('os_favs')) || [],
     currentImg: "",
-    adminPass: "7777",
-    currentView: 'home',
-
+    
     init() {
         db.ref('ads').on('value', (s) => {
             const d = s.val();
-            this.ads = d ? Object.values(d) : [];
-            this.render(this.ads, this.currentView);
+            let list = d ? Object.values(d) : [];
+            this.ads = list.sort((a, b) => (b.isVip || 0) - (a.isVip || 0) || b.id - a.id);
+            this.render(this.ads);
         });
     },
 
-    render(data, mode = 'home') {
-        this.currentView = mode;
+    render(data) {
         const feed = document.getElementById('feed');
-        const vipTrack = document.getElementById('vip-track');
-        const vipArea = document.getElementById('vip-area');
-        const pTools = document.getElementById('profile-tools');
-        
-        feed.className = (mode === 'home' || mode === 'fav' || mode === 'admin') ? "grid" : "";
-        pTools.style.display = (mode === 'profile' || mode === 'admin') ? 'block' : 'none';
-        
-        const sorted = [...data].sort((a,b) => b.id - a.id);
-
-        if(mode === 'home') {
-            document.getElementById('home-view').style.display = 'block';
-            const vips = this.ads.filter(a => a.isVip);
-            if(vips.length > 0) {
-                vipArea.style.display = 'block';
-                vipTrack.innerHTML = vips.map(v => `<div class="vip-card" onclick="app.viewAd(${v.id})"><img src="${v.img}"><p>${Number(v.price).toLocaleString()} с.</p></div>`).join('');
-            } else vipArea.style.display = 'none';
-        } else document.getElementById('home-view').style.display = 'none';
-
-        if(mode !== 'profile') feed.innerHTML = sorted.map(a => this.adCardTemplate(a, mode)).join('');
-    },
-
-    adCardTemplate(a, mode) {
-        return `
-            <div class="card" onclick="app.viewAd(${a.id})">
-                ${a.isSold ? '<div class="sold-badge">ФУРӮХТА ШУД</div>' : ''}
-                ${a.isVip ? '<span class="vip-star">★ VIP</span>' : ''}
-                <button class="like-btn" onclick="event.stopPropagation(); app.toggleFav(${a.id})">${this.favs.includes(a.id)?'❤️':'🤍'}</button>
+        feed.className = "grid";
+        feed.innerHTML = data.map(a => `
+            <div class="card ${a.isVip ? 'vip' : ''}" onclick="app.viewAd('${a.id}')">
+                ${a.isVip ? '<div class="vip-badge">VIP</div>' : ''}
                 <img src="${a.img}">
                 <div class="card-body">
-                    <div class="price">${Number(a.price).toLocaleString()} смн.</div>
+                    <div class="price">${Number(a.price).toLocaleString()} смн</div>
                     <div class="title">${a.title}</div>
-                    ${mode === 'admin' ? `
-                        <div style="display:flex; gap:5px; margin-top:5px;">
-                            <button onclick="event.stopPropagation(); app.toggleSold(${a.id})">✅</button>
-                            <button onclick="event.stopPropagation(); app.toggleVip(${a.id})">⭐</button>
-                            <button onclick="event.stopPropagation(); app.deleteAd(${a.id})">🗑️</button>
-                        </div>` : ''}
                 </div>
-            </div>`;
+            </div>`).join('');
     },
 
-    showMyAds() {
-        const myAds = this.ads.filter(a => a.phone === auth.user);
-        this.currentView = 'profile';
-        document.getElementById('home-view').style.display = 'none';
-        document.getElementById('profile-tools').style.display = 'block';
-        const feed = document.getElementById('feed');
-        feed.className = "";
-        feed.innerHTML = `
-            <div style="background:white; padding:20px; border-radius:15px; text-align:center; margin-bottom:15px;">
-                <div style="width:60px; height:60px; background:var(--main); color:white; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 10px; font-size:24px;">👤</div>
-                <h3>Профили ман</h3>
-                <p>📞 +992 ${auth.user}</p>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:15px;">
-                    <button onclick="app.shareApp()" style="background:#e8f0fe; border:none; padding:10px; border-radius:10px; font-weight:bold; color:var(--main);">🔗 РАВОН КАРДАН</button>
-                    <button onclick="app.editPhone()" style="background:#eee; border:none; padding:10px; border-radius:10px; font-weight:bold;">⚙️ ИВАЗИ РАҚАМ</button>
-                </div>
-                <button onclick="app.adminLogin()" style="opacity:0; margin-top:5px;">.</button>
-            </div>
-            <h4>Эълонҳои ман:</h4>
-            <div class="grid">${myAds.map(a => this.adCardTemplate(a, 'my')).join('')}</div>`;
-    },
-
-    shareApp() {
-        const text = "ОСОН САВДО - Беҳтарин барнома барои хариду фурӯш дар Тоҷикистон!";
-        const url = window.location.href;
-        if (navigator.share) {
-            navigator.share({ title: 'OSON SAVDO', text: text, url: url });
-        } else {
-            prompt("Истинодро нусха гиред:", url);
-        }
-    },
-
-    editPhone() {
-        const n = prompt("Рақами навро ворид кунед (9 рақам):", auth.user);
-        if(n && /^\d{9}$/.test(n)) {
-            localStorage.setItem('os_user', n);
-            alert("Рақам иваз шуд!");
-            location.reload();
-        }
+    handleImg(i) {
+        const file = i.files[0];
+        if(!file) return;
+        document.getElementById('loading-overlay').style.display = 'flex';
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                let w = img.width, h = img.height, max = 800;
+                if(w > h) { if(w > max) { h *= max/w; w = max; } } else { if(h > max) { w *= max/h; h = max; } }
+                canvas.width = w; canvas.height = h;
+                canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                this.currentImg = canvas.toDataURL('image/jpeg', 0.7);
+                document.getElementById('img-prev').innerHTML = `<img src="${this.currentImg}" style="width:100%; height:100%; object-fit:cover; border-radius:12px;">`;
+                document.getElementById('loading-overlay').style.display = 'none';
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
     },
 
     showAdd() {
         document.getElementById('home-view').style.display = 'none';
         const feed = document.getElementById('feed');
-        feed.className = "centered-form";
+        feed.className = "";
         feed.innerHTML = `
             <div style="background:white; padding:20px; border-radius:15px;">
-                <h3 style="text-align:center;">Эълони нав</h3>
-                <div onclick="document.getElementById('fIn').click()" id="img-prev" style="background:#f0f2f5; height:180px; border-radius:12px; display:flex; align-items:center; justify-content:center; margin-bottom:15px; border: 2px dashed #ccc; cursor:pointer;">📷 Акс</div>
+                <h3>Эълони нав</h3>
+                <div onclick="document.getElementById('fIn').click()" id="img-prev" style="background:#eee; height:150px; border-radius:12px; display:flex; align-items:center; justify-content:center; margin-bottom:15px; border:2px dashed #ccc;">📷 Акс</div>
                 <input type="file" id="fIn" hidden accept="image/*" onchange="app.handleImg(this)">
-                <input type="text" id="fT" placeholder="Номи маҳсулот" style="width:100%; padding:14px; margin-bottom:12px; border:1px solid #ddd; border-radius:12px; box-sizing:border-box;">
-                <input type="number" id="fP" placeholder="Нарх (смн)" style="width:100%; padding:14px; margin-bottom:12px; border:1px solid #ddd; border-radius:12px; box-sizing:border-box;">
-                <select id="fCat" style="width:100%; padding:14px; margin-bottom:20px; border:1px solid #ddd; border-radius:12px;">
-                    <option>Телефон</option><option>Мошин</option><option>Хона</option><option>Иҷора</option><option>Ноутбук</option><option>Усто</option><option>Либос</option><option>Оптом</option>
+                <select id="fCat" class="input-style" onchange="app.renderExtraForm(this.value)">
+                    <option value="">Категорияро интихоб кунед</option>
+                    <option>Телефон</option><option>Мошин</option><option>Хона</option>
+                    <option>Иҷора</option><option>Усто</option><option>Либос</option>
+                    <option>барномасоз</option><option>Оптом</option>
                 </select>
-                <button onclick="app.saveAd()" class="btn-call" style="border:none;">БОР КАРДАН</button>
+                <div id="extra-inputs"></div>
+                <input type="text" id="fT" placeholder="Номи маҳсулот" class="input-style">
+                <input type="number" id="fP" placeholder="Нарх (смн)" class="input-style">
+                <textarea id="fD" placeholder="Тавсифи пурра" class="input-style" style="height:100px"></textarea>
+                <button onclick="app.saveAd()" class="btn-call">НАШР КАРДАН</button>
             </div>`;
+    },
+
+    renderExtraForm(cat) {
+        const container = document.getElementById('extra-inputs');
+        let html = '';
+        if(cat === 'Мошин') html = '<input id="ex1" placeholder="Матор (л)" class="input-style"><input id="ex2" placeholder="Пробег (км)" class="input-style"><input id="ex3" placeholder="Сол" class="input-style">';
+        if(cat === 'Телефон') html = '<input id="ex1" placeholder="Хотира (ГБ)" class="input-style">';
+        if(cat === 'Хона') html = '<input id="ex1" placeholder="Масоҳат (м²)" class="input-style">';
+        if(cat === 'барномасоз') html = '<input id="ex1" placeholder="Таҷриба (сол)" class="input-style"><input id="ex2" placeholder="Stack" class="input-style">';
+        container.innerHTML = html;
     },
 
     saveAd() {
         const t = document.getElementById('fT').value, p = document.getElementById('fP').value, c = document.getElementById('fCat').value;
         if(!t || !p || !this.currentImg) return alert("Пур кунед!");
+        document.getElementById('loading-overlay').style.display = 'flex';
         const id = Date.now();
-        db.ref('ads/'+id).set({id, title:t, price:p, cat:c, img:this.currentImg, phone:auth.user, isSold:false, isVip:false})
-        .then(() => { alert("Бор шуд!"); this.goHome(); });
+        const extra = { ex1: document.getElementById('ex1')?.value || '', ex2: document.getElementById('ex2')?.value || '', ex3: document.getElementById('ex3')?.value || '' };
+        db.ref('ads/'+id).set({id, title:t, price:p, cat:c, img:this.currentImg, desc:document.getElementById('fD').value, phone:auth.user, isVip:false, ...extra})
+        .then(() => location.reload());
     },
 
-    handleImg(i) {
-        if(i.files && i.files[0]) {
-            const r = new FileReader();
-            r.onload = (e) => { this.currentImg = e.target.result; document.getElementById('img-prev').innerHTML = `<img src="${e.target.result}" style="width:100%; height:100%; object-fit:cover; border-radius:12px;">`; };
-            r.readAsDataURL(i.files[0]);
-        }
-    },
-
-    toggleSold(id) { const ad = this.ads.find(a => a.id === id); if(ad) db.ref('ads/'+id).update({isSold: !ad.isSold}); },
-    toggleVip(id) { const ad = this.ads.find(a => a.id === id); if(ad) db.ref('ads/'+id).update({isVip: !ad.isVip}); },
-    deleteAd(id) { if(confirm("Нест кунем?")) db.ref('ads/'+id).remove(); },
-    toggleFav(id) { if(this.favs.includes(id)) this.favs = this.favs.filter(i => i !== id); else this.favs.push(id); localStorage.setItem('os_favs', JSON.stringify(this.favs)); this.render(this.ads, this.currentView); },
     viewAd(id) {
-        const ad = this.ads.find(a => a.id === id); if(!ad) return;
-        document.getElementById('m-img').src = ad.img;
+        const ad = this.ads.find(a => a.id == id);
+        document.getElementById('slider-track').innerHTML = `<img src="${ad.img}">`;
         document.getElementById('m-price').innerText = Number(ad.price).toLocaleString() + ' смн';
         document.getElementById('m-title').innerText = ad.title;
+        document.getElementById('m-desc').innerText = ad.desc || '';
         document.getElementById('m-call').href = 'tel:' + ad.phone;
-        document.getElementById('m-wa').href = `https://wa.me/992${ad.phone}`;
+        
+        let extraHtml = '';
+        if(ad.cat === 'Мошин') extraHtml = `<div class="spec-item"><span>Матор</span><b>${ad.ex1} л</b></div><div class="spec-item"><span>Пробег</span><b>${ad.ex2} км</b></div><div class="spec-item"><span>Сол</span><b>${ad.ex3}</b></div>`;
+        if(ad.cat === 'Телефон') extraHtml = `<div class="spec-item"><span>Хотира</span><b>${ad.ex1} ГБ</b></div>`;
+        document.getElementById('m-extra').innerHTML = extraHtml;
+        
         document.getElementById('ad-modal').style.display = 'flex';
     },
+
+    showMyAds() {
+        document.getElementById('home-view').style.display = 'none';
+        const feed = document.getElementById('feed');
+        feed.className = "";
+        const myAds = this.ads.filter(a => a.phone === auth.user);
+        const adminBtn = auth.isAdmin() ? `<button onclick="app.showAdminPanel()" class="btn-vip">⚙️ ПАНЕЛИ АДМИН</button>` : '';
+        feed.innerHTML = `
+            <div style="background:white; padding:20px; border-radius:15px; text-align:center; margin-bottom:15px;">
+                <h3>Профили ман</h3>
+                <p>📞 +992 ${auth.user}</p>
+                ${adminBtn}
+                <button onclick="localStorage.clear(); location.reload();" class="btn-red">БАРОМАД</button>
+            </div>
+            <h4>Эълонҳои ман:</h4>
+            <div class="grid">${myAds.map(a => `<div class="card"><img src="${a.img}"><div class="card-body"><b>${a.price} смн</b><div>${a.title}</div><button onclick="app.deleteAd('${a.id}')" style="border:none; color:red; background:none;">🗑️ Нест кардан</button></div></div>`).join('')}</div>`;
+    },
+
+    showAdminPanel() {
+        document.getElementById('home-view').style.display = 'none';
+        const feed = document.getElementById('feed');
+        feed.className = "";
+        feed.innerHTML = `<div style="padding:20px; background:#333; color:white; border-radius:15px; margin-bottom:15px;"><h3>Панели Админ</h3><button onclick="app.goHome()" class="btn-call">БА ПАС</button></div><div class="grid">${this.ads.map(a => `
+            <div class="card ${a.isVip ? 'vip' : ''}">
+                <img src="${a.img}"><div class="card-body"><b>${a.price} смн</b>
+                <button onclick="app.toggleVip('${a.id}', ${!a.isVip})" class="btn-vip">${a.isVip ? '❌ НЕСТ КАРДАНИ VIP' : '⭐ VIP КАРДАН'}</button>
+                <button onclick="app.deleteAd('${a.id}')" class="btn-red">🗑️ НЕСТ КАРДАН</button>
+            </div></div>`).join('')}</div>`;
+    },
+
+    toggleVip(id, st) { db.ref('ads/'+id).update({isVip: st}).then(() => alert("VIP иваз шуд")); },
+    deleteAd(id) { if(confirm("Нест кунем?")) db.ref('ads/'+id).remove().then(() => location.reload()); },
     closeModal() { document.getElementById('ad-modal').style.display = 'none'; },
     goHome() { location.reload(); },
-    showFavs() { this.render(this.ads.filter(a => this.favs.includes(a.id)), 'fav'); },
-    filter(cat, el) { document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active')); el.classList.add('active'); this.render(cat === 'Ҳама' ? this.ads : this.ads.filter(a => a.cat === cat)); },
-    search(q) { this.render(this.ads.filter(a => a.title.toLowerCase().includes(q.toLowerCase())), this.currentView); },
-    adminLogin() { let p = prompt("Парол:"); if(p === this.adminPass) this.render(this.ads, 'admin'); }
+    filter(cat, el) { 
+        document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active')); 
+        el.classList.add('active'); 
+        this.render(cat === 'Ҳама' ? this.ads : this.ads.filter(a => a.cat === cat)); 
+    },
+    search(q) { this.render(this.ads.filter(a => a.title.toLowerCase().includes(q.toLowerCase()))); }
 };
 
 auth.check();
